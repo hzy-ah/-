@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>关键字检索</title>
+    <link rel="stylesheet" href="https://cache.amap.com/lbs/static/main1119.css" />
+    <style type="text/css">
+        #container {
+            width: 500px;
+            height: 500px;
+            /* 适当的高度 */
+        }
+
+        #panel {
+            /* position: absolute;
+            background-color: white;
+            max-height: 90%;
+            overflow-y: auto;
+            top: 10px; */
+            right: 10px;
+            width: 280px;
+        }
+    </style>
+    <script type="text/javascript">
+        window._AMapSecurityConfig = {
+            securityJsCode: "0fe41de6a227154b395c01dc04e4abbd",
+        };
+    </script>
+    <script type="text/javascript"
+        src="https://webapi.amap.com/maps?v=2.0&key=2a641eea81bd442f68bff0d24e9ede83"></script>
+</head>
+
+<body>
+    <div id="container"></div>
+    <div id="panel"></div>
+    <script type="text/javascript">
+        var map = new AMap.Map("container", {
+            viewMode: '2D', //默认使用 2D 模式
+            zoom: 11, //地图级别
+            center: [116.397428, 39.90923], //地图中心点
+        });
+        AMap.plugin('AMap.PlaceSearch', function () {
+            var placeSearch = new AMap.PlaceSearch({
+                // city 指定搜索所在城市，支持传入格式有：城市名、citycode和adcode
+                city: '010',
+            });
+           
+            placeSearch.search('北京大学', function (status, result) {
+                // 查询成功时，result即对应匹配的POI信息
+                console.log(result)
+            });
+        });
+    </script>
+</body>
+
+</html>

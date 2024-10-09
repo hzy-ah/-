@@ -1,0 +1,113 @@
+html,
+body {
+    background-color: #f7f7f7; /* 浅灰色背景 */ 
+    color: white; /* 设置文字颜色为白色 */
+    margin: 0;
+    padding: 0 5px; /* 上下内边距为 0，左右内边距为 20px */
+    height: 100%;
+    overflow: hidden;
+
+}
+
+h1 {
+    font-family: '微软雅黑', '黑体', sans-serif;
+    /* 设置字体 */
+    font-size: 48px;
+    /* 设置字体大小 */
+    color: black;
+    /* 设置字体颜色 */
+    /* line-height: 1.5; */
+    margin: 0; /* 去掉外边距 */
+    padding: 0; /* 去掉内边距 */
+    /* 行高 */
+    /* margin: 10px 10px; */
+    /* 上下外边距 */
+}
+
+
+.grid_container {
+    display: grid;
+    grid-template-areas:
+        "frosted_left frosted_middle frosted_right";
+    grid-template-columns: 1fr 4fr 2fr;
+    /* 定义列宽度 */
+    grid-template-rows: 1fr;
+    /* 定义行高度 */
+    width: 100%;
+    /* 宽度为100% */
+    height: 600px;
+
+    /* background-color: #4CAF50; */
+    background-color: #f7f7f7;
+    color: black; /* 字体颜色 */
+    /* margin: 5px;  */
+}
+
+.frosted_left {
+    height: 100%;
+    width: calc(100% - 10px); /* 减去外边距 */
+    grid-area: frosted_left;
+    background-color: white;
+    color: black; /* 字体颜色 */
+    margin: 5px; /* 设置所有方向的外边距为 10px */
+    padding: 8px;
+    border-radius: 5px; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+}
+
+.frosted_middle {
+    height: 100%;
+    width: calc(100% - 10px); /* 减去外边距 */
+    grid-area: frosted_middle;
+    background-color: white;
+    color: black; /* 字体颜色 */
+    /* 背景色设置为白色以便查看 */
+    margin: 5px; /* 设置所有方向的外边距为 10px */
+    border-radius: 5px; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+}
+
+#container{
+    border-radius: 5px; 
+}
+
+.frosted_right {
+    position: relative;
+    height: 100%;
+    width: calc(100% - 10px); /* 减去外边距 */
+    grid-area: frosted_right;
+    background-color: white;
+    color: black; /* 字体颜色 */
+    margin: 5px; /* 设置所有方向的外边距为 10px */
+
+    
+    border-radius: 5px; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+}
+/* ***************************************************************/
+
+/*************************************************************** */
+
+
+
+
+
+/***************************************************************************/
+
+
+#container {
+    width: 100%;
+    /* 确保地图容器宽度占满父容器 */
+    height: 100%;
+    /* 确保地图容器高度占满父容器 */
+}
+
+.checkbox-group {
+    margin-bottom: 10px;
+}
+
+.label-parent-style {
+    font-size: 20px;
+    font-family: 'Roboto', sans-serif; /* 设置为 Roboto 字体 */
+    /* 设置字体大小为 18px */
+}

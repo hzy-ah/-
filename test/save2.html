@@ -1,0 +1,315 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css" />
+
+    <script>
+        fetch('http://localhost:80/api/security-key')
+            .then((response) => {
+                const res = response.json();
+                console.log('res:', res);
+                return res
+            })
+            .then((data) => {
+                const sk = data.securityKey;
+                console.log('sk:', sk);
+                window._AMapSecurityConfig = {
+                    securityJsCode: sk,
+                };
+                return sk
+            })
+            .catch((error) => {
+                console.error('Error:', error)
+            })
+
+
+    </script>
+
+    <!-- <script>
+        window.onload = function () {
+            var result = confirm("是否保存更改？");
+            if (result) {
+                alert("保存成功！");
+            } else {
+                alert("未保存更改！");
+            }
+        }
+    </script> -->
+
+
+
+    <script src="https://webapi.amap.com/maps?v=2.0&key=a63706ae4f7e0b234d883e03ec9f63bf"></script>
+    <script src="https://a.amap.com/jsapi_demos/static/geojson/shanghai.js"></script>
+    <link rel="stylesheet" href="../frontend/css/style.css" />
+    <script src="../frontend/js/basic.js"></script>
+    <!-- <script src="../frontend/js/layer.js"></script> -->
+    <title>地图显示</title>
+
+    <script defer src="bundle.js"></script>
+    <link href="styles.css" rel="stylesheet">
+</head>
+
+
+<body>
+    <div id="frosted_header">
+        <button id="button1" class="inactive">未开启卫星图层</button>
+        <button id="button2" class="inactive">未开启路网图层</button>
+        <button id="button3" class="inactive">未开启交通图层</button>
+        <button id="button4" class="inactive">清理localStorage</button>
+    </div>
+
+
+    <div class="grid_container">
+        <div class="frosted_left">
+            <!-- 主复选框 -->
+            <div class="checkbox-group">
+                <input type="checkbox" id="mainCheckbox" onclick="toggleSubCheckboxes(this)">
+                <label for="mainCheckbox" class="label-parent-style">图层</label>
+                <div id="layer"></div>
+            </div>
+
+            <!-- 另一个主复选框 -->
+            <div class="checkbox-group">
+                <input type="checkbox" id="mainCheckbox2" onclick="toggleSubCheckboxes(this)">
+                <label for="mainCheckbox2" class="label-parent-style">主选项 2</label>
+                <div id="mapcontrols"></div>
+            
+
+                <!-- <div class="sub-checkbox-container">
+                    <button id="subButton1" class="label-style" onclick="handleSubOption('子选项 2.1')">子选项
+                        2.1</button><br>
+                    <button id="subButton2" class="label-style" onclick="handleSubOption('子选项 2.2')">子选项
+                        2.2</button><br>
+                    <button id="subButton3" class="label-style" onclick="handleSubOption('子选项 2.3')">子选项 2.3</button>
+                </div> -->
+
+            </div>
+        </div>
+        <div class="frosted_middle">
+            <div id="container"></div>
+        </div>
+        <div class="frosted_right">
+            <div class="frosted_right_input">
+                <input type="text" id="input-box" placeholder="请输入文字" class="placesearch_input" />
+                <button id="submit-button" class="placesearch_button">确定</button>
+            </div>
+            <div id='my-panel' class="my-panel-class"></div>
+        </div>
+
+    </div>
+
+    <div class="frosted_bottom"></div>
+
+    <script>
+        // 初始化地图
+        var map = new AMap.Map('container', {
+            viewMode: '3D',
+            zoom: 11,
+            center: [116.397428, 39.90923],
+            pitch: 45,
+        });
+
+
+        // var satellite = new AMap.TileLayer.Satellite();
+        // var roadNet = new AMap.TileLayer.RoadNet();
+        // var traffic = new AMap.TileLayer.Traffic({
+        //     autoRefresh: true,
+        //     interval: 180,
+        // });
+        // // 跟踪图层是否已添加
+        // var satelliteAdded = false;
+        // var roadNetAdded = false;
+        // var trafficAdded = false;
+
+        // // 切换按钮状态
+        // function toggleLayer(button, layer, isAdded) {
+        //     if (isAdded) {
+        //         map.remove(layer); // 如果图层已添加，移除它
+        //         button.classList.remove('active');
+        //         button.classList.add('inactive');
+        //         text = button.textContent
+        //         button.textContent = "未开启" + text.slice(3);
+        //     } else {
+        //         map.add(layer); // 如果图层未添加，添加它
+        //         button.classList.remove('inactive');
+        //         button.classList.add('active');
+        //         text = button.textContent
+        //         button.textContent = "已开启" + text.slice(3);
+        //     }
+        // }
+
+
+
+        //异步加载控件
+       
+        AMap.plugin(['AMap.ToolBar', 'AMap.Scale', 'AMap.Geolocation',
+            'AMap.MapType', 'AMap.LineSearch', 'AMap.Weather', 'AMap.GeoJSON'], function () {
+                var toolbar = new AMap.ToolBar(); //缩放工具条实例化
+                var scale = new AMap.Scale();
+                var geolocation = new AMap.Geolocation();
+                var maptype = new AMap.MapType();
+                var linesearch = new AMap.LineSearch();
+
+                map.addControl(toolbar); //添加控件
+                map.addControl(scale);
+                // map.addControl(geolocation);
+                map.addControl(maptype)
+
+            });
+
+        const markerContent = `<div id='marker' class='c'><img src="//a.amap.com/jsapi_demos/static/demo-center/icons/dir-via-marker.png"></div>`
+        var marker = new AMap.Marker({
+            position: [116.397428, 39.90923],
+            content: markerContent, //将 html 传给 content
+            // offset: new AMap.Pixel(-13, -30), //以 icon 的 [center bottom] 为原点
+        });
+        map.add(marker);
+
+
+        marker.on('click', function () {
+            console.log('Marker clicked'); // 调试日志
+            window.open('https://lbs.amap.com/api/javascript-api-v2/tutorails/add-plugin', '_blank');
+        });
+
+        var placeSearch;
+        AMap.plugin(["AMap.PlaceSearch"], function () {
+            placeSearch = new AMap.PlaceSearch({
+                pageSize: 5, //单页显示结果条数
+                pageIndex: 1, //页码
+                city: "北京", //兴趣点城市
+                citylimit: true, //是否强制限制在设置的城市内搜索
+                map: map, //展现结果的地图实例
+                panel: "my-panel", //参数值为你页面定义容器的 id 值<div id="my-panel"></div>，结果列表将在此容器中进行展示。
+                autoFitView: true, //是否自动调整地图视野使绘制的 Marker 点都处于视口的可见范围
+            });
+
+        });
+        const place_input = document.getElementById('submit-button')
+        place_input.addEventListener('click', function () {
+            console.log('找到');
+            var input_text = document.getElementById('input-box').value;
+            placeSearch.search(input_text); //使用插件搜索关键字并查看结果
+
+        });
+        var geojsonMultiPoint = {
+            type: "Feature",
+            geometry: {
+                type: "MultiPoint",
+                coordinates: []
+            }
+
+        };
+        // const data = getData();
+        // console.log('ssss', data); // 这里应该没有问题
+        // localStorage.setItem('markerGeojson', '[]')
+        // loadData();
+        var geojson;
+        AMap.plugin(['AMap.GeoJSON'], function () {
+            geojson = new AMap.GeoJSON({
+                GeoJSON: null,
+            })
+
+        });
+
+        if (JSON.stringify(getData()) != '[]') {
+            console.log(getData())
+            geojson.importData(getData())
+            geojson.eachOverlay((item) => {
+                item.on('click', (e) => {
+                    console.log(e.lnglat, "旧的事件点击")
+                    const ext = item.getExtData()
+                    const click = ++ext._geoJsonProperties.click
+                    ext._geoJsonProperties.click = click
+                    saveData(geojson.toGeoJSON());
+                    console.log("点击次数", click)
+
+                    var infowindow = new AMap.InfoWindow({
+                        anchor: 'top-center',
+                        content: `<div>打卡了${click}</div>`
+                    })
+                    infowindow.open(map, item.getPosition())
+                })
+            })
+        }
+        map.add(geojson)
+
+        map.on('click', function (e) {
+            console.log('点击')
+            var marker0 = new AMap.Marker({
+                position: e.lnglat,
+                extData: {
+                    _geoJsonProperties: {
+                        gid: geojson.getOverlays().length + 1,
+                        click: 0,
+                    }
+                }
+
+            });
+
+            geojson.addOverlay(marker0);
+            saveData(geojson.toGeoJSON());
+            marker0.on('click', (e) => {
+                console.log(e.lnglat, "新的事件点击了");
+                const ext = marker0.getExtData()
+                const click = ++ext._geoJsonProperties.click
+                ext._geoJsonProperties.click = click
+                console.log("点击次数", click)
+                saveData(geojson.toGeoJSON());
+
+
+                var infowindow = new AMap.InfoWindow({
+                    anchor: 'top-center',
+                    content: `<div>打卡了${click}</div>`
+                })
+                infowindow.open(map, marker0.getPosition())
+
+            })
+
+            // const markerGeojson = getData();
+            // markerGeojson.push(e.lnglat);
+            // saveData(markerGeojson);
+        })
+
+        // 创建图层
+        //清理localStorage
+
+        // // 卫星图层开关
+        // document.getElementById('button1').onclick = function () {
+        //     toggleLayer(this, satellite, satelliteAdded);
+        //     satelliteAdded = !satelliteAdded; // 切换状态
+        // };
+
+        // // 路网图层开关
+        // document.getElementById('button2').onclick = function () {
+        //     toggleLayer(this, roadNet, roadNetAdded);
+        //     roadNetAdded = !roadNetAdded;
+        // };
+
+        // // 交通图层开关
+        // document.getElementById('button3').onclick = function () {
+        //     toggleLayer(this, traffic, trafficAdded);
+        //     trafficAdded = !trafficAdded;
+        // };
+
+        // document.getElementById('button4').onclick = function () {
+        //     console.log("清理");
+        //     geojson.clearOverlays();
+        // }
+
+        document.getElementById
+
+
+
+
+
+
+
+    </script>
+
+</body>
+
+</html>
